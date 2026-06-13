@@ -104,7 +104,7 @@ export default function Customers() {
 
     return (
 
-        <div className="min-h-screen bg-[#FFF2E1] p-10">
+        <div className="min-h-screen bg-[#FFF2E1] p-4 sm:p-10">
 
             {/* PAGE TITLE */}
             <h1 className="text-5xl font-bold text-[#A79277] mb-10">
@@ -230,6 +230,8 @@ export default function Customers() {
 
                 </div>
 
+                <div className="overflow-x-auto">
+
                 {
                     loading
                         ?
@@ -255,7 +257,7 @@ export default function Customers() {
                         )
                         :
                         (
-                            <table className="w-full">
+                            <table className="w-full min-w-[560px]">
 
                                 <thead className="bg-[#EFE6DD]">
 
@@ -317,6 +319,8 @@ export default function Customers() {
                             </table>
                         )
                 }
+
+                </div>
 
             </div>
 

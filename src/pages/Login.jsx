@@ -10,6 +10,8 @@ export default function Login({ setIsAuthenticated }) {
 
     const [password, setPassword] = useState("");
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -77,16 +79,27 @@ export default function Login({ setIsAuthenticated }) {
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                         className="w-full border rounded-2xl px-5 py-4"
                     />
 
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full border rounded-2xl px-5 py-4"
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                            className="w-full border rounded-2xl px-5 py-4 pr-12"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </button>
+                    </div>
 
                     {
                         error && (
