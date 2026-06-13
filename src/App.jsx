@@ -30,6 +30,7 @@ export default function App() {
     useState(
       localStorage.getItem("isAuthenticated") === "true"
     );
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -44,17 +45,27 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
 
       <div className="fixed top-0 left-0 right-0 z-50 bg-[#A79277] text-white px-4 py-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
-          <Link className="text-sm font-semibold" to="/">
-            Home
-          </Link>
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Link className="text-sm font-semibold" to="/">
+              Home
+            </Link>
 
-          {isAuthenticated && (
-            <>
-              <div className="flex flex-wrap items-center gap-3">
+            <button
+              className="sm:hidden rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold"
+              onClick={() => setMenuOpen((open) => !open)}
+              type="button"
+            >
+              {menuOpen ? "Close" : "Menu"}
+            </button>
+          </div>
+
+          <div className="hidden sm:flex sm:items-center sm:gap-3">
+            {isAuthenticated && (
+              <>
                 <Link to="/dashboard" className="text-sm font-semibold">
                   Dashboard
                 </Link>
@@ -74,20 +85,71 @@ export default function App() {
                 <Link to="/billing" className="text-sm font-semibold">
                   Billing
                 </Link>
-              </div>
 
-              <button
-                onClick={logout}
-                className="ml-auto mt-2 sm:mt-0 bg-red-500 px-4 py-2 rounded-xl"
-              >
-                Logout
-              </button>
-            </>
+                <button
+                  onClick={logout}
+                  className="bg-red-500 px-4 py-2 rounded-xl text-sm font-semibold"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+
+          {menuOpen && isAuthenticated && (
+            <div className="absolute left-0 right-0 top-full bg-[#A79277] p-4 shadow-xl sm:hidden">
+              <div className="flex flex-col gap-3">
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-semibold"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/customers"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-semibold"
+                >
+                  Customers
+                </Link>
+                <Link
+                  to="/orders"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-semibold"
+                >
+                  Orders
+                </Link>
+                <Link
+                  to="/measurements"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-semibold"
+                >
+                  Measurements
+                </Link>
+                <Link
+                  to="/billing"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-semibold"
+                >
+                  Billing
+                </Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    logout();
+                  }}
+                  className="bg-red-500 px-4 py-2 rounded-xl text-sm font-semibold"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="pt-20">
+      <div className="pt-28 sm:pt-20">
 
         <Routes>
 
