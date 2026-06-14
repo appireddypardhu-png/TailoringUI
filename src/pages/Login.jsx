@@ -45,7 +45,7 @@ export default function Login({ setIsAuthenticated }) {
 
             setIsAuthenticated(true);
 
-            navigate("/dashboard");
+            navigate("/customers");
 
         }
         catch (error) {

@@ -1,68 +1,56 @@
-export default function Orders() {
 
-    const orders = [
-        {
-            id: 101,
-            customer: "Pardhu",
-            dress: "Designer Blouse",
-            amount: "₹2500",
-            status: "Pending",
-        },
-        {
-            id: 102,
-            customer: "Keerthi",
-            dress: "Lehenga",
-            amount: "₹5000",
-            status: "Completed",
-        },
-    ];
+import { useEffect, useState } from "react";
+import OrderSection from "../components/OrderSection";
+import API from "../services/api";
+
+export default function Orders() {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchOrders = async () => {
+        try {
+            setLoading(true);
+            const res = await API.get("/orders");
+            setOrders(res.data || []);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching orders:", err);
+            setError(err.message || "Failed to load orders");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
     return (
-        <div className="min-h-screen bg-[#FFF2E1] p-10">
+        <div className="min-h-screen bg-[#FFF2E1] p-4 sm:p-8">
 
-            <h1 className="text-5xl font-bold text-[#A79277] mb-10">
-                Orders Dashboard
-            </h1>
+            {loading && (
+                <div className="flex items-center justify-center min-h-[200px]">
+                    <div className="text-2xl text-[#A79277]">Loading...</div>
+                </div>
+            )}
 
-            <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    Error: {error}
+                </div>
+            )}
 
-                <table className="w-full">
-
-                    <thead className="bg-[#A79277] text-white">
-
-                        <tr>
-                            <th className="p-5 text-left">Order ID</th>
-                            <th className="p-5 text-left">Customer</th>
-                            <th className="p-5 text-left">Dress</th>
-                            <th className="p-5 text-left">Amount</th>
-                            <th className="p-5 text-left">Status</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {orders.map((order) => (
-
-                            <tr
-                                key={order.id}
-                                className="border-b"
-                            >
-                                <td className="p-5">#{order.id}</td>
-                                <td className="p-5">{order.customer}</td>
-                                <td className="p-5">{order.dress}</td>
-                                <td className="p-5">{order.amount}</td>
-                                <td className="p-5">{order.status}</td>
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+            {!loading && !error && (
+                <div className="grid lg:grid-cols-1 gap-8">
+                    <OrderSection
+                        orders={orders}
+                        members={[]}
+                        onRefresh={fetchOrders}
+                        showCustomerColumns={true}
+                    />
+                </div>
+            )}
         </div>
     );
 }

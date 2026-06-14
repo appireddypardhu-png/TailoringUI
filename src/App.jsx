@@ -3,17 +3,15 @@ import {
   Routes,
   Route,
   Navigate,
-  Link,
-  useNavigate
+  NavLink,
+  useNavigate,
+  Link
 } from "react-router-dom";
 
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import CustomerDetails from "./pages/CustomerDetails";
 import Orders from "./pages/Orders";
-import Measurements from "./pages/Measurements";
-import Billing from "./pages/Billing";
 import Login from "./pages/Login";
 
 import "./style.css";
@@ -47,15 +45,18 @@ export default function App() {
   return (
     <div className="overflow-x-hidden">
 
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#A79277] text-white px-4 py-4">
-        <div className="relative max-w-7xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link className="text-sm font-semibold" to="/">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#A79277] text-white px-4 py-3 shadow-lg">
+        <div className="relative max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Link
+              className="text-sm font-medium rounded-lg px-3 py-2 hover:bg-white/15 transition"
+              to="/"
+            >
               Home
             </Link>
 
             <button
-              className="sm:hidden rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold"
+              className="sm:hidden rounded-lg border border-white/30 px-3 py-2 text-sm font-medium"
               onClick={() => setMenuOpen((open) => !open)}
               type="button"
             >
@@ -63,32 +64,30 @@ export default function App() {
             </button>
           </div>
 
-          <div className="hidden sm:flex sm:items-center sm:gap-3">
+          <div className="hidden sm:flex sm:items-center sm:gap-2">
             {isAuthenticated && (
               <>
-                <Link to="/dashboard" className="text-sm font-semibold">
-                  Dashboard
-                </Link>
-
-                <Link to="/customers" className="text-sm font-semibold">
+                <NavLink
+                  to="/customers"
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
+                >
                   Customers
-                </Link>
+                </NavLink>
 
-                <Link to="/orders" className="text-sm font-semibold">
+                <NavLink
+                  to="/orders"
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
+                >
                   Orders
-                </Link>
-
-                <Link to="/measurements" className="text-sm font-semibold">
-                  Measurements
-                </Link>
-
-                <Link to="/billing" className="text-sm font-semibold">
-                  Billing
-                </Link>
+                </NavLink>
 
                 <button
                   onClick={logout}
-                  className="bg-red-500 px-4 py-2 rounded-xl text-sm font-semibold"
+                  className="bg-red-500 px-3 py-2 rounded-lg text-sm font-semibold"
                 >
                   Logout
                 </button>
@@ -97,49 +96,32 @@ export default function App() {
           </div>
 
           {menuOpen && isAuthenticated && (
-            <div className="absolute left-0 right-0 top-full bg-[#A79277] p-4 shadow-xl sm:hidden">
-              <div className="flex flex-col gap-3">
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm font-semibold"
-                >
-                  Dashboard
-                </Link>
-                <Link
+            <div className="absolute left-0 right-0 top-full bg-[#A79277] p-3 shadow-xl sm:hidden">
+              <div className="flex flex-col gap-2">
+                <NavLink
                   to="/customers"
                   onClick={() => setMenuOpen(false)}
-                  className="text-sm font-semibold"
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
                 >
                   Customers
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/orders"
                   onClick={() => setMenuOpen(false)}
-                  className="text-sm font-semibold"
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
                 >
                   Orders
-                </Link>
-                <Link
-                  to="/measurements"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm font-semibold"
-                >
-                  Measurements
-                </Link>
-                <Link
-                  to="/billing"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm font-semibold"
-                >
-                  Billing
-                </Link>
+                </NavLink>
                 <button
                   onClick={() => {
                     setMenuOpen(false);
                     logout();
                   }}
-                  className="bg-red-500 px-4 py-2 rounded-xl text-sm font-semibold"
+                  className="bg-red-500 px-3 py-2 rounded-lg text-sm font-semibold"
                 >
                   Logout
                 </button>
@@ -170,16 +152,6 @@ export default function App() {
               />
             }
           />
-
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
           <Route
             path="/customers"
             element={
@@ -203,24 +175,6 @@ export default function App() {
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Orders />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/measurements"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <Measurements />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/billing"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <Billing />
               </ProtectedRoute>
             }
           />

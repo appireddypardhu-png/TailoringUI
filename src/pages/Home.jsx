@@ -3,30 +3,87 @@
 // ================================
 import { useState } from "react";
 import Logo from "../assets/logo_main.png";
+import HomeBack from "../assets/HomeBack.png";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 export default function Home({ isAuthenticated }) {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [images, setImages] = useState([]);
+    const [loadingImages, setLoadingImages] = useState(false);
+    const [imageError, setImageError] = useState("");
+    const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
     const navigate = useNavigate();
     const services = [
         {
             title: "Blouse Stitching",
             desc: "Custom designer blouses with perfect fitting and premium finishing.",
+            folder: "Blouse",
             image:
-                "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200&auto=format&fit=crop",
+                "https://i.pinimg.com/736x/85/9b/bc/859bbc1578269e34b03b24afc49bdaf4.jpg",
         },
         {
             title: "Lehenga Designing",
             desc: "Elegant bridal and party wear lehenga stitching.",
+            folder: "Lehenga",
             image:
-                "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop",
+                "https://i.pinimg.com/736x/2a/cb/f3/2acbf3c19e8cba0544e88218d87bbe62.jpg",
         },
         {
             title: "Custom Measurements",
             desc: "Professional tailoring for every customer.",
+            folder: "Custom",
             image:
-                "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=1200&auto=format&fit=crop",
+                "https://i.pinimg.com/736x/5a/a9/95/5aa99546ed46c23dfba5bf2e803c661c.jpg",
+        },
+    ];
+
+    const fetchFolderImages = async (folder, title) => {
+        setIsModalOpen(true);
+        setModalTitle(title);
+        setLoadingImages(true);
+        setImageError("");
+        setImages([]);
+
+        try {
+            const response = await API.get(`/api/images/folders/${encodeURIComponent(folder)}`);
+            const rootImages = response?.data?.data?.root;
+
+            if (Array.isArray(rootImages)) {
+                setImages(rootImages);
+            } else {
+                setImageError("Unable to fetch images");
+            }
+        } catch (error) {
+            setImageError("Unable to fetch images");
+        } finally {
+            setLoadingImages(false);
+        }
+    };
+
+    const pricing = [
+        {
+            label: "Blouse Stitching",
+            price: "₹1,200 - ₹2,500",
+            description: "Designer blouses with premium finishing and perfect fitting.",
+        },
+        {
+            label: "Lehenga Designing",
+            price: "₹3,500 - ₹7,500",
+            description: "Bridal and party lehenga stitching tailored to your style.",
+        },
+        {
+            label: "Custom Measurements",
+            price: "₹900 - ₹2,000",
+            description: "Made-to-measure tailoring for every body shape.",
+        },
+        {
+            label: "Kurti Stitching",
+            price: "₹800 - ₹1,500",
+            description: "Daily wear and formal kurtis with elegant finishes.",
         },
     ];
 
@@ -102,7 +159,7 @@ export default function Home({ isAuthenticated }) {
                             onClick={() =>
                                 navigate(
                                     isAuthenticated
-                                        ? "/dashboard"
+                                        ? "/customers"
                                         : "/login"
                                 )
                             }
@@ -120,7 +177,7 @@ export default function Home({ isAuthenticated }) {
                             text-sm
                             "
                         >
-                            Admin Panel
+                            Login
                         </button>
 
                     </div>
@@ -147,7 +204,7 @@ export default function Home({ isAuthenticated }) {
                                     setMenuOpen(false);
                                     navigate(
                                         isAuthenticated
-                                            ? "/dashboard"
+                                            ? "/customers"
                                             : "/login"
                                     );
                                 }}
@@ -169,7 +226,8 @@ export default function Home({ isAuthenticated }) {
                 className="relative h-screen flex items-center justify-center"
             >
                 <img
-                    src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1400&auto=format&fit=crop"
+                    src={HomeBack}
+                    alt="Tailoring studio background"
                     className="absolute inset-0 w-full h-full object-cover opacity-30"
                 />
 
@@ -192,8 +250,12 @@ export default function Home({ isAuthenticated }) {
                         designer blouses and premium boutique fashion.
                     </p>
 
-                    <button className="bg-[#A79277] text-white px-8 py-4 rounded-full">
-                        Book Appointment
+                    <button
+                        type="button"
+                        onClick={() => setIsPriceModalOpen(true)}
+                        className="bg-[#A79277] text-white px-8 py-4 rounded-full hover:bg-[#8E7A61] transition duration-300"
+                    >
+                        View Price List
                     </button>
                 </div>
             </section>
@@ -213,14 +275,17 @@ export default function Home({ isAuthenticated }) {
 
                     <div className="grid md:grid-cols-3 gap-10">
                         {services.map((service, index) => (
-                            <div
+                            <button
                                 key={index}
-                                className="bg-white rounded-[30px] overflow-hidden shadow-xl"
+                                type="button"
+                                onClick={() => fetchFolderImages(service.folder, service.title)}
+                                className="group cursor-pointer text-left bg-white rounded-[30px] overflow-hidden shadow-xl transition hover:-translate-y-1 hover:shadow-2xl"
                             >
                                 <div className="h-80 overflow-hidden">
                                     <img
                                         src={service.image}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+                                        alt={service.title}
                                     />
                                 </div>
 
@@ -229,11 +294,15 @@ export default function Home({ isAuthenticated }) {
                                         {service.title}
                                     </h3>
 
-                                    <p className="leading-7 text-[#5E503F]">
+                                    <p className="leading-7 text-[#5E503F] mb-4">
                                         {service.desc}
                                     </p>
+
+                                    <p className="text-sm font-semibold uppercase tracking-[2px] text-[#A79277]">
+                                        Click to see our works
+                                    </p>
                                 </div>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -243,7 +312,7 @@ export default function Home({ isAuthenticated }) {
             <section id="about" className="py-28 bg-[#FAF7F0]">
                 <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
                     <img
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop"
+                        src="https://i.pinimg.com/736x/9e/42/d5/9e42d509b9c1516d09bd7e82be71ac40.jpg"
                         className="rounded-[40px] shadow-2xl"
                     />
 
@@ -308,6 +377,137 @@ export default function Home({ isAuthenticated }) {
                     </div>
                 </div>
             </section>
+
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-[30px] bg-white shadow-2xl"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between border-b border-[#E8E1D8] px-6 py-4">
+                            <div>
+                                <p className="text-xs uppercase tracking-[4px] text-[#A79277]">
+                                    Our Works
+                                </p>
+                                <h3 className="text-2xl font-bold text-[#5E503F]">
+                                    {modalTitle}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsModalOpen(false)}
+                                className="rounded-full border border-[#D8C3A5] px-4 py-2 text-sm font-semibold text-[#5E503F] hover:bg-[#F8EBDD]"
+                            >
+                                Close
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-96px)]">
+                            {loadingImages ? (
+                                <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-center text-[#5E503F]">
+                                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#A79277]/30 border-t-[#A79277]" />
+                                    <p className="text-lg font-semibold">Loading works...</p>
+                                    <p className="max-w-xl text-sm text-[#7A6A55]">
+                                        It might take a minute. Please wait.
+                                    </p>
+                                </div>
+                            ) : imageError ? (
+                                <div className="min-h-[240px] flex items-center justify-center text-lg font-semibold text-[#C43D3D]">
+                                    Unable to fetch images
+                                </div>
+                            ) : images.length === 0 ? (
+                                <div className="min-h-[240px] flex items-center justify-center text-[#5E503F]">
+                                    No images found for this folder.
+                                </div>
+                            ) : (
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                    {images.map((image) => (
+                                        <div key={image.public_id} className="overflow-hidden rounded-[24px] bg-[#F7F2EB] shadow-sm">
+                                            <img
+                                                src={image.url}
+                                                alt={image.filename}
+                                                className="h-48 w-full object-cover transition duration-300 hover:scale-105"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isPriceModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                    onClick={() => setIsPriceModalOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[30px] bg-white shadow-2xl"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between border-b border-[#E8E1D8] px-6 py-4">
+                            <div>
+                                <p className="text-xs uppercase tracking-[4px] text-[#A79277]">
+                                    Our Prices
+                                </p>
+                                <h3 className="text-2xl font-bold text-[#5E503F]">
+                                    Price Guide
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsPriceModalOpen(false)}
+                                className="rounded-full border border-[#D8C3A5] px-4 py-2 text-sm font-semibold text-[#5E503F] hover:bg-[#F8EBDD]"
+                            >
+                                Close
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-96px)]">
+                            <p className="text-sm text-[#7A6A55] mb-6">
+                                Here are our pricing options in INR for different tailoring services. Final pricing may vary based on fabric, customization, and design complexity.
+                            </p>
+
+                            <div className="overflow-hidden rounded-[24px] border border-[#E8E1D8] bg-[#FAF7F0]">
+                                <table className="min-w-full divide-y divide-[#E8E1D8] text-left">
+                                    <thead className="bg-white">
+                                        <tr>
+                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
+                                                Service Type
+                                            </th>
+                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
+                                                Price (INR)
+                                            </th>
+                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
+                                                Notes
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#E8E1D8] bg-[#FAF7F0]">
+                                        {pricing.map((item) => (
+                                            <tr key={item.label}>
+                                                <td className="px-6 py-5 text-sm font-semibold text-[#5E503F]">
+                                                    {item.label}
+                                                </td>
+                                                <td className="px-6 py-5 text-sm text-[#5E503F]">
+                                                    {item.price}
+                                                </td>
+                                                <td className="px-6 py-5 text-sm text-[#5E503F]">
+                                                    {item.description}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
         </div>
     );
