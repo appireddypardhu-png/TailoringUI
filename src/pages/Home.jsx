@@ -14,6 +14,8 @@ export default function Home({ isAuthenticated }) {
     const [images, setImages] = useState([]);
     const [loadingImages, setLoadingImages] = useState(false);
     const [imageError, setImageError] = useState("");
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -47,6 +49,7 @@ export default function Home({ isAuthenticated }) {
         setLoadingImages(true);
         setImageError("");
         setImages([]);
+        setIsLightboxOpen(false);
 
         try {
             const response = await API.get(`/api/images/folders/${encodeURIComponent(folder)}`);
@@ -62,6 +65,29 @@ export default function Home({ isAuthenticated }) {
         } finally {
             setLoadingImages(false);
         }
+    };
+
+    const openLightbox = (index) => {
+        setActiveImageIndex(index);
+        setIsLightboxOpen(true);
+    };
+
+    const closeLightbox = () => {
+        setIsLightboxOpen(false);
+    };
+
+    const showPrevImage = (event) => {
+        event.stopPropagation();
+        setActiveImageIndex((current) =>
+            images.length === 0 ? current : (current - 1 + images.length) % images.length
+        );
+    };
+
+    const showNextImage = (event) => {
+        event.stopPropagation();
+        setActiveImageIndex((current) =>
+            images.length === 0 ? current : (current + 1) % images.length
+        );
     };
 
     const pricing = [
@@ -381,7 +407,10 @@ export default function Home({ isAuthenticated }) {
             {isModalOpen && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                        setIsModalOpen(false);
+                        setIsLightboxOpen(false);
+                    }}
                 >
                     <div
                         className="w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-[30px] bg-white shadow-2xl"
@@ -398,7 +427,10 @@ export default function Home({ isAuthenticated }) {
                             </div>
                             <button
                                 type="button"
-                                onClick={() => setIsModalOpen(false)}
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    setIsLightboxOpen(false);
+                                }}
                                 className="rounded-full border border-[#D8C3A5] px-4 py-2 text-sm font-semibold text-[#5E503F] hover:bg-[#F8EBDD]"
                             >
                                 Close
@@ -424,17 +456,62 @@ export default function Home({ isAuthenticated }) {
                                 </div>
                             ) : (
                                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                                    {images.map((image) => (
+                                    {images.map((image, index) => (
                                         <div key={image.public_id} className="overflow-hidden rounded-[24px] bg-[#F7F2EB] shadow-sm">
                                             <img
                                                 src={image.url}
                                                 alt={image.filename}
-                                                className="h-48 w-full object-cover transition duration-300 hover:scale-105"
+                                                className="h-48 w-full cursor-pointer object-cover transition duration-300 hover:scale-105"
+                                                onClick={() => openLightbox(index)}
                                             />
                                         </div>
                                     ))}
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isLightboxOpen && (
+                <div
+                    className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 p-4"
+                    onClick={closeLightbox}
+                >
+                    <div
+                        className="relative w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-[30px] bg-[#111111] shadow-2xl"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            onClick={closeLightbox}
+                            className="absolute top-4 right-4 z-10 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-[#5E503F] hover:bg-white"
+                        >
+                            Close
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={showPrevImage}
+                            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-bold text-[#5E503F] hover:bg-white"
+                        >
+                            ‹
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={showNextImage}
+                            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-bold text-[#5E503F] hover:bg-white"
+                        >
+                            ›
+                        </button>
+
+                        <div className="flex h-full items-center justify-center p-6">
+                            <img
+                                src={images[activeImageIndex]?.url}
+                                alt={images[activeImageIndex]?.filename || "Selected work image"}
+                                className="max-h-[80vh] max-w-full rounded-[24px] object-contain"
+                            />
                         </div>
                     </div>
                 </div>

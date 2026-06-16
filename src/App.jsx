@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -12,7 +12,9 @@ import Home from "./pages/Home";
 import Customers from "./pages/Customers";
 import CustomerDetails from "./pages/CustomerDetails";
 import Orders from "./pages/Orders";
+import OrderHistory from "./pages/OrderHistory";
 import Login from "./pages/Login";
+import Poller from "./services/poller";
 
 import "./style.css";
 
@@ -39,8 +41,30 @@ export default function App() {
 
     setIsAuthenticated(false);
 
+    try {
+      Poller.onLogout();
+    } catch (e) {
+      // ignore
+    }
+
     navigate("/");
   };
+
+  useEffect(() => {
+    try {
+      Poller.init();
+    } catch (e) {
+      // ignore
+    }
+
+    return () => {
+      try {
+        Poller.stop();
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, []);
 
   return (
     <div className="overflow-x-hidden">
@@ -85,6 +109,15 @@ export default function App() {
                   Orders
                 </NavLink>
 
+                <NavLink
+                  to="/order-history"
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
+                >
+                  Order History
+                </NavLink>
+
                 <button
                   onClick={logout}
                   className="bg-red-500 px-3 py-2 rounded-lg text-sm font-semibold"
@@ -115,6 +148,15 @@ export default function App() {
                   }
                 >
                   Orders
+                </NavLink>
+                <NavLink
+                  to="/order-history"
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `text-sm font-medium rounded-lg px-3 py-2 transition ${isActive ? "bg-white/20 shadow-lg" : "hover:bg-white/15"}`
+                  }
+                >
+                  Order History
                 </NavLink>
                 <button
                   onClick={() => {
@@ -175,6 +217,15 @@ export default function App() {
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Orders />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/order-history"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <OrderHistory />
               </ProtectedRoute>
             }
           />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import API from "../services/api";
+import * as XLSX from "xlsx";
 import { useNavigate } from "react-router-dom";
 export default function Customers() {
     const navigate = useNavigate();
@@ -93,8 +94,14 @@ export default function Customers() {
     }, []);
 
     // SEARCH FILTER
+    const sortedCustomers = [...customers].sort((a, b) =>
+        (a.cname || "").localeCompare(b.cname || "", undefined, {
+            sensitivity: "base",
+        })
+    );
+
     const filteredCustomers =
-        customers.filter((customer) =>
+        sortedCustomers.filter((customer) =>
 
             customer.cname
                 .toLowerCase()
@@ -171,28 +178,106 @@ export default function Customers() {
             <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
 
                 <div className="bg-[#A79277] text-white px-8 py-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <h2 className="text-3xl font-bold">All Customers</h2>
 
-                    <h2 className="text-3xl font-bold">
-                        All Customers
-                    </h2>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <input
+                                type="text"
+                                placeholder="Search by name or phone number..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full sm:w-72 border border-[#D8C3A5] rounded-2xl px-4 py-3 outline-none text-black bg-white"
+                            />
 
-                </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAddCustomerModal(true)}
+                                className="bg-white text-[#A79277] rounded-2xl px-5 py-3 text-sm hover:scale-105 transition"
+                            >
+                                New Customer
+                            </button>
 
-                <div className="px-6 py-5 border-b border-[#EFE6DD] flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <input
-                        type="text"
-                        placeholder="Search by name or phone number..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="flex-1 border border-[#D8C3A5] rounded-2xl px-4 py-3 outline-none"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowAddCustomerModal(true)}
-                        className="bg-[#A79277] text-white rounded-2xl px-5 py-3 text-sm hover:scale-105 transition"
-                    >
-                        New Customer
-                    </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        // fetch fresh data to ensure complete nested members are included
+                                        const resp = await API.get("/customer");
+                                        const customers = resp.data || [];
+
+                                        const rows = [];
+
+                                        customers.forEach((c) => {
+                                            if (Array.isArray(c.members) && c.members.length > 0) {
+                                                c.members.forEach((m) => {
+                                                    rows.push({
+                                                        customerid: c.customerid,
+                                                        cname: c.cname,
+                                                        cphone: c.cphone,
+                                                        mid: m.mid,
+                                                        mname: m.mname,
+                                                        topid: m.topMeasurement?.topid ?? "",
+                                                        bust: m.topMeasurement?.bust ?? "",
+                                                        top_waist: m.topMeasurement?.waist ?? "",
+                                                        shoulder: m.topMeasurement?.shoulder ?? "",
+                                                        sleeveLength: m.topMeasurement?.sleeveLength ?? "",
+                                                        topLength: m.topMeasurement?.topLength ?? "",
+                                                        neckSize: m.topMeasurement?.neckSize ?? "",
+                                                        armhole: m.topMeasurement?.armhole ?? "",
+                                                        bottomid: m.bottomMeasurement?.bottomid ?? "",
+                                                        bottom_waist: m.bottomMeasurement?.waist ?? "",
+                                                        hip: m.bottomMeasurement?.hip ?? "",
+                                                        thigh: m.bottomMeasurement?.thigh ?? "",
+                                                        kneeSize: m.bottomMeasurement?.kneeSize ?? "",
+                                                        ankleSize: m.bottomMeasurement?.ankleSize ?? "",
+                                                        bottomLength: m.bottomMeasurement?.bottomLength ?? "",
+                                                    });
+                                                });
+                                            } else {
+                                                rows.push({
+                                                    customerid: c.customerid,
+                                                    cname: c.cname,
+                                                    cphone: c.cphone,
+                                                    mid: "",
+                                                    mname: "",
+                                                    topid: "",
+                                                    bust: "",
+                                                    top_waist: "",
+                                                    shoulder: "",
+                                                    sleeveLength: "",
+                                                    topLength: "",
+                                                    neckSize: "",
+                                                    armhole: "",
+                                                    bottomid: "",
+                                                    bottom_waist: "",
+                                                    hip: "",
+                                                    thigh: "",
+                                                    kneeSize: "",
+                                                    ankleSize: "",
+                                                    bottomLength: "",
+                                                });
+                                            }
+                                        });
+
+                                        const worksheet = XLSX.utils.json_to_sheet(rows);
+                                        const workbook = XLSX.utils.book_new();
+                                        XLSX.utils.book_append_sheet(workbook, worksheet, "Customers");
+                                        XLSX.writeFile(workbook, "customers.xlsx");
+                                    } catch (err) {
+                                        console.error("Export failed", err);
+                                        alert("Failed to export customers");
+                                    }
+                                }}
+                                title="Download customers"
+                                className="ml-2 inline-flex items-center justify-center p-3 rounded-full bg-white text-[#A79277] hover:bg-white/90"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v8a1 1 0 11-2 0V5H5v10h4a1 1 0 110 2H4a1 1 0 01-1-1V3zm9.293 6.293a1 1 0 011.414 1.414L11 14.414V9a1 1 0 112 0v5.414l2.293-2.707a1 1 0 011.414 1.414l-4 4.5a1 1 0 01-1.414 0l-4-4.5a1 1 0 011.414-1.414L11 14.414V9a1 1 0 011.293-.707z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto">

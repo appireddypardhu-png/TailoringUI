@@ -1,5 +1,6 @@
 import { useState } from "react";
 import API from "../services/api";
+import Poller from "../services/poller";
 import { useNavigate } from "react-router-dom";
 
 export default function Login({ setIsAuthenticated }) {
@@ -42,6 +43,12 @@ export default function Login({ setIsAuthenticated }) {
                 "isAuthenticated",
                 "true"
             );
+
+            try {
+                Poller.onLogin();
+            } catch (e) {
+                // ignore
+            }
 
             setIsAuthenticated(true);
 
