@@ -99,10 +99,9 @@ export default function MemberSection({ members, customerId, onRefresh }) {
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full min-w-[400px]">
+                <table className="w-full min-w-[250px]">
                     <thead className="bg-[#EFE6DD]">
                         <tr>
-                            <th className="text-left p-4">Member ID</th>
                             <th className="text-left p-4">Name</th>
                         </tr>
                     </thead>
@@ -113,7 +112,6 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                                 onClick={() => openEditMember(member)}
                                 className="border-b hover:bg-[#FAF7F0] cursor-pointer"
                             >
-                                <td className="p-4">{member.mid}</td>
                                 <td className="p-4">{member.mname}</td>
                             </tr>
                         ))}

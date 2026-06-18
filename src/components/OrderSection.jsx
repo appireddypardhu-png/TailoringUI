@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Form, Input, Divider, Row, Col, Select } from "antd";
+import { Modal, Form, Input, Divider, Row, Col, Select, AutoComplete } from "antd";
 import API from "../services/api";
 import { DRESS_TYPES } from "../constants/dressTypes";
 
@@ -21,8 +21,19 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
         return subOrders.reduce((sum, order) => sum + (parseFloat(order.price) || 0), 0);
     };
 
+    const getDefaultMemberId = () => {
+        return Array.isArray(members) && members.length === 1 ? members[0]?.mid : null;
+    };
+
+    const createEmptySubOrder = () => ({
+        memberid: getDefaultMemberId(),
+        typeofdress: "",
+        quantity: 1,
+        price: 0
+    });
+
     const handleAddSubOrder = () => {
-        setSubOrders([...subOrders, { memberid: null, typeofdress: "", quantity: 1, price: 0 }]);
+        setSubOrders([...subOrders, createEmptySubOrder()]);
     };
 
     const handleRemoveSubOrder = (index) => {
@@ -100,7 +111,7 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
     };
 
     const handleOpenOrderModal = () => {
-        setSubOrders([{ memberid: null, typeofdress: "", quantity: 1, price: 0 }]);
+        setSubOrders([createEmptySubOrder()]);
         setSubOrderErrors({});
         setOrderModalOpen(true);
     };
@@ -406,12 +417,12 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
                                 </Col>
                                 <Col xs={24} sm={12} md={6}>
                                     <Form.Item label="Type of Dress">
-                                        <Input
+                                        <AutoComplete
+                                            options={DRESS_TYPES.map((type) => ({ value: type, label: type }))}
                                             placeholder="Select or enter dress type"
-                                            list="dress-type-list"
-                                            value={subOrder.typeofdress}
-                                            onChange={(e) => {
-                                                handleSubOrderChange(index, "typeofdress", e.target.value);
+                                            value={subOrder.typeofdress || ""}
+                                            onChange={(value) => {
+                                                handleSubOrderChange(index, "typeofdress", value);
                                                 if (subOrderErrors[index]?.typeofdress) {
                                                     setSubOrderErrors({
                                                         ...subOrderErrors,
@@ -419,14 +430,15 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
                                                     });
                                                 }
                                             }}
-                                            status={subOrderErrors[index]?.typeofdress ? "error" : ""}
+                                            onSelect={(value) => handleSubOrderChange(index, "typeofdress", value)}
+                                            allowClear
+                                            filterOption={(input, option) =>
+                                                option?.value?.toLowerCase().includes(input.toLowerCase())
+                                            }
                                             className={subOrderErrors[index]?.typeofdress ? "border-red-500" : ""}
+                                            style={{ width: "100%" }}
+                                            getPopupContainer={(triggerNode) => document.body}
                                         />
-                                        <datalist id="dress-type-list">
-                                            {DRESS_TYPES.map((type) => (
-                                                <option key={type} value={type} />
-                                            ))}
-                                        </datalist>
                                         {subOrderErrors[index]?.typeofdress && (
                                             <p className="text-red-500 text-xs mt-1">{subOrderErrors[index].typeofdress}</p>
                                         )}

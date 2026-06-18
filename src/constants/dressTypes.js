@@ -12,6 +12,8 @@ export const DRESS_PRICING = [
     { label: "Kids Frocks", price: "₹600-800" },
     { label: "Maggam Work", price: "As per design" },
     { label: "Saree fall and pico", price: "₹120" },
+    { label: "Lehenga Side Stitching", price: "As per work" },
+    { label: "Alterations", price: "As per work" },
 ];
 
 export const DRESS_TYPES = DRESS_PRICING.map((item) => item.label);
