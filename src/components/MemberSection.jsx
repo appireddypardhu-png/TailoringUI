@@ -16,15 +16,16 @@ export default function MemberSection({ members, customerId, onRefresh }) {
             waist: member.topMeasurement?.waist ?? null,
             shoulder: member.topMeasurement?.shoulder ?? null,
             sleeveLength: member.topMeasurement?.sleeveLength ?? null,
-            topLength: member.topMeasurement?.topLength ?? null,
-            neckSize: member.topMeasurement?.neckSize ?? null,
             armhole: member.topMeasurement?.armhole ?? null,
+            blouseLength: member.topMeasurement?.blouseLength ?? null,
+            dressLength: member.topMeasurement?.dressLength ?? null,
+            sleeveRound: member.topMeasurement?.sleeveRound ?? null,
+            dressHip: member.topMeasurement?.dressHip ?? null,
             bottomWaist: member.bottomMeasurement?.waist ?? null,
             hip: member.bottomMeasurement?.hip ?? null,
-            thigh: member.bottomMeasurement?.thigh ?? null,
-            kneeSize: member.bottomMeasurement?.kneeSize ?? null,
-            ankleSize: member.bottomMeasurement?.ankleSize ?? null,
-            bottomLength: member.bottomMeasurement?.bottomLength ?? null,
+            pantLength: member.bottomMeasurement?.pantLength ?? null,
+            mori: member.bottomMeasurement?.mori ?? null,
+            thighRound: member.bottomMeasurement?.thighRound ?? null,
         });
         setMemberModalOpen(true);
     };
@@ -49,21 +50,22 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                 mname: trimmedName,
                 customerid: customerId,
                 topMeasurement: {
+                    shoulder: values.shoulder || null,
                     bust: values.bust || null,
                     waist: values.waist || null,
-                    shoulder: values.shoulder || null,
+                    blouseLength: values.blouseLength || null,
                     sleeveLength: values.sleeveLength || null,
-                    topLength: values.topLength || null,
-                    neckSize: values.neckSize || null,
+                    sleeveRound: values.sleeveRound || null,
                     armhole: values.armhole || null,
+                    dressHip: values.dressHip || null,
+                    dressLength: values.dressLength || null,
                 },
                 bottomMeasurement: {
                     waist: values.bottomWaist || null,
                     hip: values.hip || null,
-                    thigh: values.thigh || null,
-                    kneeSize: values.kneeSize || null,
-                    ankleSize: values.ankleSize || null,
-                    bottomLength: values.bottomLength || null,
+                    pantLength: values.pantLength || null,
+                    mori: values.mori || null,
+                    thighRound: values.thighRound || null,
                 },
             };
 
@@ -146,6 +148,11 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                     <Divider>Top Measurements</Divider>
                     <Row gutter={16}>
                         <Col xs={24} sm={12} md={8}>
+                            <Form.Item name="shoulder" label="Shoulder">
+                                <Input type="number" placeholder="Enter shoulder" step="0.1" />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={12} md={8}>
                             <Form.Item name="bust" label="Bust">
                                 <Input type="number" placeholder="Enter bust" step="0.1" />
                             </Form.Item>
@@ -155,27 +162,22 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                                 <Input type="number" placeholder="Enter waist" step="0.1" />
                             </Form.Item>
                         </Col>
-                        <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="shoulder" label="Shoulder">
-                                <Input type="number" placeholder="Enter shoulder" step="0.1" />
-                            </Form.Item>
-                        </Col>
                     </Row>
 
                     <Row gutter={16}>
+                        <Col xs={24} sm={12} md={8}>
+                            <Form.Item name="blouseLength" label="Blouse Length">
+                                <Input type="number" placeholder="Enter blouse length" step="0.1" />
+                            </Form.Item>
+                        </Col>
                         <Col xs={24} sm={12} md={8}>
                             <Form.Item name="sleeveLength" label="Sleeve Length">
                                 <Input type="number" placeholder="Enter sleeve length" step="0.1" />
                             </Form.Item>
                         </Col>
                         <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="topLength" label="Top Length">
-                                <Input type="number" placeholder="Enter top length" step="0.1" />
-                            </Form.Item>
-                        </Col>
-                        <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="neckSize" label="Neck Size">
-                                <Input type="number" placeholder="Enter neck size" step="0.1" />
+                            <Form.Item name="sleeveRound" label="Sleeve Round">
+                                <Input type="number" placeholder="Enter sleeve round" step="0.1" />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -184,6 +186,16 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                         <Col xs={24} sm={12} md={8}>
                             <Form.Item name="armhole" label="Armhole">
                                 <Input type="number" placeholder="Enter armhole" step="0.1" />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={12} md={8}>
+                            <Form.Item name="dressHip" label="Dress Hip">
+                                <Input type="number" placeholder="Enter dress hip" step="0.1" />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={12} md={8}>
+                            <Form.Item name="dressLength" label="Dress Length">
+                                <Input type="number" placeholder="Enter dress length" step="0.1" />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -201,26 +213,21 @@ export default function MemberSection({ members, customerId, onRefresh }) {
                             </Form.Item>
                         </Col>
                         <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="thigh" label="Thigh">
-                                <Input type="number" placeholder="Enter thigh" step="0.1" />
+                            <Form.Item name="pantLength" label="Pant Length">
+                                <Input type="number" placeholder="Enter pant length" step="0.1" />
                             </Form.Item>
                         </Col>
                     </Row>
 
                     <Row gutter={16}>
                         <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="kneeSize" label="Knee Size">
-                                <Input type="number" placeholder="Enter knee size" step="0.1" />
+                            <Form.Item name="mori" label="Mori">
+                                <Input type="number" placeholder="Enter mori" step="0.1" />
                             </Form.Item>
                         </Col>
                         <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="ankleSize" label="Ankle Size">
-                                <Input type="number" placeholder="Enter ankle size" step="0.1" />
-                            </Form.Item>
-                        </Col>
-                        <Col xs={24} sm={12} md={8}>
-                            <Form.Item name="bottomLength" label="Bottom Length">
-                                <Input type="number" placeholder="Enter bottom length" step="0.1" />
+                            <Form.Item name="thighRound" label="Thigh Round">
+                                <Input type="number" placeholder="Enter thigh round" step="0.1" />
                             </Form.Item>
                         </Col>
                     </Row>
