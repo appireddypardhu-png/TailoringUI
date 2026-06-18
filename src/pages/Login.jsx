@@ -59,11 +59,26 @@ export default function Login({ setIsAuthenticated }) {
         }
         catch (error) {
 
-            console.log(error);
+            console.error("Login error:", error);
 
-            setError(
-                "Invalid username or password"
-            );
+            // Determine the actual error message
+            let errorMessage = "Invalid username or password";
+            
+            if (error?.response?.status === 401) {
+                errorMessage = "Invalid username or password";
+            } else if (error?.response?.status === 500) {
+                errorMessage = "Server error. Please try again later.";
+            } else if (error?.message === "Network Error") {
+                errorMessage = "Network error. Check your connection.";
+            } else if (error?.code === "ERR_NETWORK") {
+                errorMessage = "Cannot reach the server. Check if it's online.";
+            } else if (error?.response?.data) {
+                errorMessage = error.response.data;
+            } else if (error?.message) {
+                errorMessage = error.message;
+            }
+
+            setError(errorMessage);
         }
         finally {
 

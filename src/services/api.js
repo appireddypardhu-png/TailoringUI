@@ -32,12 +32,15 @@ API.interceptors.response.use(
                 // ignore errors
             }
 
-            // user-friendly message
             try {
-                alert("please login to continue");
+                alert("Please login to continue.");
             } catch (e) {
                 // ignore alert errors
             }
+        }
+
+        if (status === 404) {
+            console.warn("API returned 404:", error?.config?.url || "unknown endpoint");
         }
 
         return Promise.reject(error);

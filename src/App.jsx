@@ -14,6 +14,7 @@ import CustomerDetails from "./pages/CustomerDetails";
 import Orders from "./pages/Orders";
 import OrderHistory from "./pages/OrderHistory";
 import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
 import Poller from "./services/poller";
 
 import "./style.css";
@@ -242,6 +243,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
 
