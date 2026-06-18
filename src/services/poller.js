@@ -52,8 +52,9 @@ function startRefreshChecks() {
 }
 
 function handleStorageEvent(e) {
-  if (e.key === "isAuthenticated") {
-    const val = e.newValue === "true";
+  // handle both cross-tab storage events (have key) and our dispatched same-tab events (no key)
+  if (!e.key || e.key === "isAuthenticated") {
+    const val = localStorage.getItem("isAuthenticated") === "true";
     if (val) startRefreshChecks();
     else startHealthChecks();
   }

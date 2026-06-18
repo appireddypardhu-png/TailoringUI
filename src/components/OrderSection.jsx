@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Form, Input, Divider, Row, Col, Select } from "antd";
 import API from "../services/api";
+import { DRESS_TYPES } from "../constants/dressTypes";
 
 export default function OrderSection({ orders, members, customerId, onRefresh, showCustomerColumns = false }) {
     const [orderModalOpen, setOrderModalOpen] = useState(false);
@@ -406,7 +407,8 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
                                 <Col xs={24} sm={12} md={6}>
                                     <Form.Item label="Type of Dress">
                                         <Input
-                                            placeholder="e.g., Kurta"
+                                            placeholder="Select or enter dress type"
+                                            list="dress-type-list"
                                             value={subOrder.typeofdress}
                                             onChange={(e) => {
                                                 handleSubOrderChange(index, "typeofdress", e.target.value);
@@ -420,6 +422,11 @@ export default function OrderSection({ orders, members, customerId, onRefresh, s
                                             status={subOrderErrors[index]?.typeofdress ? "error" : ""}
                                             className={subOrderErrors[index]?.typeofdress ? "border-red-500" : ""}
                                         />
+                                        <datalist id="dress-type-list">
+                                            {DRESS_TYPES.map((type) => (
+                                                <option key={type} value={type} />
+                                            ))}
+                                        </datalist>
                                         {subOrderErrors[index]?.typeofdress && (
                                             <p className="text-red-500 text-xs mt-1">{subOrderErrors[index].typeofdress}</p>
                                         )}

@@ -16,7 +16,7 @@ API.interceptors.request.use((config) => {
     return config;
 });
 
-// Global response interceptor: on 403, clear auth and redirect to login
+// Global response interceptor: on 403, clear auth and dispatch event
 API.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -26,22 +26,17 @@ API.interceptors.response.use(
             try {
                 localStorage.removeItem("token");
                 localStorage.removeItem("isAuthenticated");
+                // dispatch storage event for same-tab updates
+                window.dispatchEvent(new Event("storage"));
             } catch (e) {
-                // ignore localStorage errors
+                // ignore errors
             }
 
-            // user-friendly message, then redirect to login (reloads app state)
+            // user-friendly message
             try {
                 alert("please login to continue");
             } catch (e) {
                 // ignore alert errors
-            }
-
-            try {
-                window.location.href = "/login";
-            } catch (e) {
-                // as a fallback, reload the page
-                window.location.reload();
             }
         }
 

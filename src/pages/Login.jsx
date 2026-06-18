@@ -43,6 +43,8 @@ export default function Login({ setIsAuthenticated }) {
                 "isAuthenticated",
                 "true"
             );
+            // dispatch storage event for other listeners
+            window.dispatchEvent(new Event("storage"));
 
             try {
                 Poller.onLogin();

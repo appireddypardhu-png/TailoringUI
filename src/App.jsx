@@ -32,12 +32,25 @@ export default function App() {
     );
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Watch localStorage for auth changes from other components/interceptors
+  useEffect(() => {
+    const handleAuthChange = () => {
+      const authed = localStorage.getItem("isAuthenticated") === "true";
+      setIsAuthenticated(authed);
+    };
+
+    window.addEventListener("storage", handleAuthChange);
+    return () => window.removeEventListener("storage", handleAuthChange);
+  }, []);
+
   const navigate = useNavigate();
 
   const logout = () => {
 
     localStorage.removeItem("token");
     localStorage.removeItem("isAuthenticated");
+    // dispatch storage event for other listeners
+    window.dispatchEvent(new Event("storage"));
 
     setIsAuthenticated(false);
 

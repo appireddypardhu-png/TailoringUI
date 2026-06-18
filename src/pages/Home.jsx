@@ -6,6 +6,7 @@ import Logo from "../assets/logo_main.png";
 import HomeBack from "../assets/HomeBack.png";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { DRESS_PRICING } from "../constants/dressTypes";
 
 export default function Home({ isAuthenticated }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -40,6 +41,20 @@ export default function Home({ isAuthenticated }) {
             folder: "Custom",
             image:
                 "https://i.pinimg.com/736x/5a/a9/95/5aa99546ed46c23dfba5bf2e803c661c.jpg",
+        },
+        {
+            title: "Maggam Work",
+            desc: "Exquisite embellished designs with intricate beadwork and embroidery.",
+            folder: "Maggam",
+            image:
+                "https://i.pinimg.com/736x/b2/c7/9b/b2c79b8d6dcc975d72bc64a6c4a3b823.jpg",
+        },
+        {
+            title: "Long Frocks",
+            desc: "Stylish and elegant long frocks for every occasion.",
+            folder: "LongFrocks",
+            image:
+                "https://i.pinimg.com/736x/1e/5e/97/1e5e97e2ac11e65e10c41b5fb295644d.jpg",
         },
     ];
 
@@ -90,28 +105,7 @@ export default function Home({ isAuthenticated }) {
         );
     };
 
-    const pricing = [
-        {
-            label: "Blouse Stitching",
-            price: "₹1,200 - ₹2,500",
-            description: "Designer blouses with premium finishing and perfect fitting.",
-        },
-        {
-            label: "Lehenga Designing",
-            price: "₹3,500 - ₹7,500",
-            description: "Bridal and party lehenga stitching tailored to your style.",
-        },
-        {
-            label: "Custom Measurements",
-            price: "₹900 - ₹2,000",
-            description: "Made-to-measure tailoring for every body shape.",
-        },
-        {
-            label: "Kurti Stitching",
-            price: "₹800 - ₹1,500",
-            description: "Daily wear and formal kurtis with elegant finishes.",
-        },
-    ];
+    const pricing = DRESS_PRICING;
 
     return (
         <div className="bg-[#FFF2E1] text-[#5E503F] overflow-hidden">
@@ -203,7 +197,7 @@ export default function Home({ isAuthenticated }) {
                             text-sm
                             "
                         >
-                            Login
+                            Admin
                         </button>
 
                     </div>
@@ -550,36 +544,32 @@ export default function Home({ isAuthenticated }) {
                             </p>
 
                             <div className="overflow-hidden rounded-[24px] border border-[#E8E1D8] bg-[#FAF7F0]">
-                                <table className="min-w-full divide-y divide-[#E8E1D8] text-left">
-                                    <thead className="bg-white">
-                                        <tr>
-                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
-                                                Service Type
-                                            </th>
-                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
-                                                Price (INR)
-                                            </th>
-                                            <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
-                                                Notes
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-[#E8E1D8] bg-[#FAF7F0]">
-                                        {pricing.map((item) => (
-                                            <tr key={item.label}>
-                                                <td className="px-6 py-5 text-sm font-semibold text-[#5E503F]">
-                                                    {item.label}
-                                                </td>
-                                                <td className="px-6 py-5 text-sm text-[#5E503F]">
-                                                    {item.price}
-                                                </td>
-                                                <td className="px-6 py-5 text-sm text-[#5E503F]">
-                                                    {item.description}
-                                                </td>
+                                <div className="max-h-[50vh] overflow-y-auto">
+                                    <table className="min-w-full divide-y divide-[#E8E1D8] text-left">
+                                        <thead className="bg-white sticky top-0 z-10">
+                                            <tr>
+                                                <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
+                                                    Service Type
+                                                </th>
+                                                <th className="px-6 py-4 text-sm font-semibold uppercase tracking-[2px] text-[#5E503F]">
+                                                    Price (INR)
+                                                </th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className="divide-y divide-[#E8E1D8] bg-[#FAF7F0]">
+                                            {pricing.map((item) => (
+                                                <tr key={item.label}>
+                                                    <td className="px-6 py-5 text-sm font-semibold text-[#5E503F]">
+                                                        {item.label}
+                                                    </td>
+                                                    <td className="px-6 py-5 text-sm text-[#5E503F]">
+                                                        {item.price}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
